@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <script>
+    // ตั้งธีมก่อน CSS โหลด กันจอกระพริบตอนเปิดหน้า
+    (function () {
+      try {
+        var saved = localStorage.getItem("theme");
+        if (saved === "light" || saved === "dark") {
+          document.documentElement.setAttribute("data-theme", saved);
+        }
+      } catch (e) { }
+    })();
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>พรหมมินทร์ | Programmer</title>
+  <meta name="description" content="Portfolio ของโปรแกรมเมอร์ รวมประวัติและผลงาน">
+
+  <!-- แก้ URL และรูปด้านล่างเป็นของจริงหลัง deploy (og:image ต้องมีไฟล์ images/og-image.png ขนาด 1200x630) -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="พรหมมินทร์ | Programmer">
+  <meta property="og:description" content="Portfolio ของโปรแกรมเมอร์ รวมประวัติและผลงาน">
+  <meta property="og:image" content="images/og-image.png">
+  <meta property="og:url" content="https://example.com">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=3">
+
+  <!-- แก้ข้อมูลด้านล่างให้ตรงกับเนื้อหาจริงตอนใส่ข้อมูล -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "พรหมมินทร์",
+    "jobTitle": "Programmer",
+    "url": "https://example.com"
+  }
+  </script>
+</head>
+
+<body>
+
+  <header class="nav">
+    <a class="logo" href="#top">พรหมมินทร์</a>
+    <nav aria-label="เมนูหลัก" id="site-nav">
+      <a href="#about">ประวัติ</a>
+      <a href="#projects">ผลงาน</a>
+      <a href="#contact">ติดต่อ</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="theme-toggle" type="button" aria-pressed="false" aria-label="สลับโหมดมืด">
+        <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1">
+          </path>
+        </svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+          <path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z"></path>
+        </svg>
+      </button>
+      <a class="btn nav-cta" href="#contact">ติดต่อ</a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="เปิดเมนู">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main id="top">
+
+    <!-- ส่วนแนะนำตัว: แก้ข้อความได้เลย -->
+    <section class="hero">
+      <div class="hero-content">
+        <p class="role">Programmer</p>
+        <h1>พรหมมินทร์</h1>
+        <p class="lead">
+          เขียนโค้ดเพราะชอบเห็นไอเดียกลายเป็นของที่ใช้ได้จริง
+          ตอนนี้กำลังทำเว็บและเครื่องมือเล็กๆ ที่คนใช้ได้ทุกวัน
+        </p>
+        <p class="hiring-note">
+          หากบริษัทหรือทีมใดกำลังมองหา Junior Developer / New Graduate Developer
+          ผมยินดีพูดคุย และพร้อมเรียนรู้เทคโนโลยีใหม่ๆ เพิ่มเติมครับ
+        </p>
+        <div class="actions">
+          <a class="btn" href="#projects">ดูผลงาน</a>
+          <a class="btn ghost" href="#contact">ติดต่อ</a>
+          <button class="btn ghost" type="button" id="print-cv">ดาวน์โหลด CV (PDF)</button>
+        </div>
+      </div>
+
+      <!-- แถบรูปผลงานเลื่อนอัตโนมัติ ดึงรูปจาก projects.js ให้เอง -->
+      <div class="hero-marquee" aria-hidden="true">
+        <div class="hero-marquee-track" id="hero-marquee-track"></div>
+      </div>
+    </section>
+
+    <!-- ประวัติแบบ CV: คัดลอก <li> เพื่อเพิ่มรายการ -->
+    <section class="about reveal" id="about">
+      <div class="container">
+        <h2>ประวัติ</h2>
+
+        <div class="cv">
+          <div>
+            <h3>การศึกษา</h3>
+            <ol class="timeline">
+              <li>
+                <span class="when">2021 ถึง 2025</span>
+                <strong>มหาวิทยาลัยขอนแก่น</strong>
+                <p>วิทยาลัยการคอมพิวเตอร์ สาขาวิทยาการคอมพิวเตอร์</p>
+              </li>
+            </ol>
+          </div>
+
+          <div>
+            <h3>ประสบการณ์</h3>
+            <ol class="timeline">
+              <li>
+                <span class="when">2024 (ฝึกงานช่วงซัมเมอร์ 3 เดือน)</span>
+                <strong>บริษัทถึงแก่น Elite Shield</strong>
+                <p>
+                  ดูแลเว็บไซต์ของบริษัท เพิ่มผลงานลงเว็บและแก้ไขเพิ่มหมวดหมู่ของชิ้นงานจากเว็บเดิม
+                  พร้อมทำระบบจองคิวล้างรถที่แจ้งเตือนเข้า LINE ของแอดมินอัตโนมัติเมื่อมีลูกค้าจองคิว
+                </p>
+              </li>
+            </ol>
+          </div>
+        </div>
+
+        <h3>เครื่องมือที่เคยใช้</h3>
+
+        <div class="tool-groups">
+          <div class="tool-group">
+            <h4 class="tool-group-title">AI และออกแบบ</h4>
+            <ul class="stickers tools" aria-label="เครื่องมือหมวด AI และออกแบบ">
+              <li><span class="tool-icon"><img src="images/tools/claude.svg" alt="" loading="lazy"></span>Claude</li>
+              <li><span class="tool-icon"><img src="images/tools/claude.svg" alt="" loading="lazy"></span>Claude Design
+              </li>
+              <li><span class="tool-icon"><img src="images/tools/figma.svg" alt="" loading="lazy"></span>Figma</li>
+              <li><span class="tool-icon"><img src="images/tools/google-stitch.svg" alt="" loading="lazy"></span>Google
+                Stitch</li>
+              <li><span class="tool-icon"><img src="images/tools/google-flow.svg" alt="" loading="lazy"></span>Google
+                Flow</li>
+            </ul>
+          </div>
+
+          <div class="tool-group">
+            <h4 class="tool-group-title">ภาษาและโค้ด</h4>
+            <ul class="stickers tools" aria-label="เครื่องมือหมวดภาษาและโค้ด">
+              <li><span class="tool-icon"><img src="images/tools/html5.svg" alt="" loading="lazy"></span>HTML</li>
+              <li><span class="tool-icon"><img src="images/tools/css3.svg" alt="" loading="lazy"></span>CSS</li>
+              <li><span class="tool-icon"><img src="images/tools/javascript.svg" alt="" loading="lazy"></span>JavaScript
+              </li>
+              <li><span class="tool-icon"><img src="images/tools/typescript.svg" alt="" loading="lazy"></span>TypeScript
+              </li>
+              <li><span class="tool-icon"><img src="images/tools/python.svg" alt="" loading="lazy"></span>Python</li>
+            </ul>
+          </div>
+
+          <div class="tool-group">
+            <h4 class="tool-group-title">Backend, Hosting และฐานข้อมูล</h4>
+            <ul class="stickers tools" aria-label="เครื่องมือหมวด Backend, Hosting และฐานข้อมูล">
+              <li><span class="tool-icon"><img src="images/tools/firebase.svg" alt="" loading="lazy"></span>Firebase
+              </li>
+              <li><span class="tool-icon"><img src="images/tools/supabase.svg" alt="" loading="lazy"></span>Supabase
+              </li>
+              <li><span class="tool-icon"><img src="images/tools/vercel.svg" alt="" loading="lazy"></span>Vercel</li>
+              <li><span class="tool-icon"><img src="images/tools/render.svg" alt="" loading="lazy"></span>Render</li>
+              <li><span class="tool-icon"><img src="images/tools/github.svg" alt="" loading="lazy"></span>GitHub</li>
+            </ul>
+          </div>
+
+          <div class="tool-group">
+            <h4 class="tool-group-title">เว็บไซต์สำเร็จรูปและ CMS</h4>
+            <ul class="stickers tools" aria-label="เครื่องมือหมวดเว็บไซต์สำเร็จรูปและ CMS">
+              <li><span class="tool-icon"><img src="images/tools/google-sites.svg" alt="" loading="lazy"></span>Google
+                Sites</li>
+              <li><span class="tool-icon"><img src="images/tools/blogger.svg" alt="" loading="lazy"></span>Blogger</li>
+              <li><span class="tool-icon"><img src="images/tools/wordpress.svg" alt="" loading="lazy"></span>WordPress
+              </li>
+            </ul>
+          </div>
+
+          <div class="tool-group">
+            <h4 class="tool-group-title">Google Workspace และเอกสาร</h4>
+            <ul class="stickers tools" aria-label="เครื่องมือหมวด Google Workspace และเอกสาร">
+              <li><span class="tool-icon"><img src="images/tools/google-apps-script.svg" alt=""
+                    loading="lazy"></span>Google Apps Script</li>
+              <li><span class="tool-icon"><img src="images/tools/google-sheets.svg" alt="" loading="lazy"></span>Google
+                Sheets</li>
+              <li><span class="tool-icon"><img src="images/tools/word.svg" alt="" loading="lazy"></span>Word</li>
+              <li><span class="tool-icon"><img src="images/tools/excel.svg" alt="" loading="lazy"></span>Excel</li>
+            </ul>
+          </div>
+
+          <div class="tool-group">
+            <h4 class="tool-group-title">แชทบอทและการเชื่อมต่อ</h4>
+            <ul class="stickers tools" aria-label="เครื่องมือหมวดแชทบอทและการเชื่อมต่อ">
+              <li><span class="tool-icon"><img src="images/tools/line.svg" alt="" loading="lazy"></span>LINE Messaging
+                API</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ผลงานถูกสร้างจาก projects.js -->
+    <section class="projects reveal" id="projects">
+      <div class="container">
+        <h2>ผลงาน</h2>
+        <p class="section-lead">เลื่อนดูผลงานได้ กดที่การ์ดเพื่อดูรายละเอียดของแต่ละชิ้น</p>
+        <div class="filter-bar" id="project-filters" aria-label="กรองผลงานตามแท็ก"></div>
+        <div class="carousel">
+          <div class="grid" id="project-grid" tabindex="0" role="region" aria-label="รายการผลงาน เลื่อนซ้าย-ขวาได้">
+          </div>
+          <button class="carousel-nav prev" type="button" id="grid-prev" aria-label="เลื่อนผลงานไปทางซ้าย">
+            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+              <path d="M15 5l-7 7 7 7"></path>
+            </svg>
+          </button>
+          <button class="carousel-nav next" type="button" id="grid-next" aria-label="เลื่อนผลงานไปทางขวา">
+            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+              <path d="M9 5l7 7-7 7"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="contact reveal" id="contact">
+      <div class="container">
+        <h2>ข้อมูลการติดต่อ</h2>
+        <p class="section-lead">สามารถติดต่อได้ตามช่องทางด้านล่าง ยินดีตอบกลับโดยเร็วที่สุด</p>
+
+        <div class="cv contact-info">
+          <div>
+            <h3>ช่องทางติดต่อ</h3>
+            <ul class="timeline">
+              <li>
+                <span class="contact-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="20" height="20">
+                    <path
+                      d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z">
+                    </path>
+                  </svg>
+                </span>
+                <div>
+                  <span class="when">โทร</span>
+                  <strong><a href="tel:+66951680544">095-1680544</a></strong>
+                </div>
+              </li>
+              <li>
+                <span class="contact-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="20" height="20">
+                    <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                    <path d="M22 7l-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                  </svg>
+                </span>
+                <div>
+                  <span class="when">Email</span>
+                  <strong><a href="mailto:promminkew@gmail.com">promminkew@gmail.com</a></strong>
+                </div>
+              </li>
+              <li>
+                <span class="contact-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="20" height="20">
+                    <path
+                      d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z">
+                    </path>
+                  </svg>
+                </span>
+                <div>
+                  <span class="when">LINE ID</span>
+                  <!-- ลิงก์นี้เปิดได้เฉพาะเมื่อตั้งค่า LINE ให้คนอื่นเพิ่มเพื่อนด้วย ID ได้ -->
+                  <strong><a href="https://line.me/ti/p/~prommin1711" target="_blank"
+                      rel="noopener">prommin1711</a></strong>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3>พื้นที่ที่สะดวกทำงาน</h3>
+            <ul class="timeline">
+              <li>
+                <span class="contact-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="20" height="20">
+                    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                </span>
+                <div>
+                  <span class="when">พร้อมเริ่มงานภายใน 7 วัน</span>
+                  <strong>ขอนแก่น (ในเมือง)</strong>
+                </div>
+              </li>
+              <li>
+                <span class="contact-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="20" height="20">
+                    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                </span>
+                <div>
+                  <span class="when">พร้อมเริ่มงานภายใน 1 เดือน</span>
+                  <strong>มหาสารคาม, ร้อยเอ็ด, นครราชสีมา</strong>
+                </div>
+              </li>
+              <li>
+                <span class="contact-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="20" height="20">
+                    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                </span>
+                <div>
+                  <span class="when">พร้อมเริ่มงานภายใน 1 เดือน</span>
+                  <strong>กรุงเทพฯ และปริมณฑล</strong>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <button class="back-to-top" type="button" id="back-to-top" aria-label="กลับขึ้นด้านบน">
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+      <path d="M12 19V5M5 12l7-7 7 7"></path>
+    </svg>
+  </button>
+
+  <footer class="footer">
+    <p>ทำด้วย HTML, CSS และ JavaScript ล้วนๆ &copy; <span id="year">2026</span> พรหมมินทร์</p>
+  </footer>
+
+  <!-- หน้าต่างรายละเอียดผลงาน -->
+  <dialog class="dialog" id="project-dialog" aria-labelledby="dialog-title">
+    <div class="dialog-inner">
+      <button class="dialog-close" type="button" data-close>ปิด</button>
+      <div class="dialog-gallery" id="dialog-gallery"></div>
+      <p class="dialog-meta" id="dialog-year"></p>
+      <h3 id="dialog-title"></h3>
+      <p class="dialog-role" id="dialog-role"></p>
+      <div class="dialog-desc" id="dialog-desc"></div>
+      <ul class="stickers small" id="dialog-tags"></ul>
+      <div class="dialog-links" id="dialog-links"></div>
+    </div>
+  </dialog>
+
+  <script src="projects.js"></script>
+  <script src="script.js?v=3"></script>
+</body>
+
+</html>
