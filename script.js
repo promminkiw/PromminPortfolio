@@ -3,7 +3,6 @@
 
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  // สร้าง element แบบสั้นๆ
   function el(tag, className, text) {
     var node = document.createElement(tag);
     if (className) node.className = className;
@@ -11,28 +10,41 @@
     return node;
   }
 
+  // ใส่รูปลงใน wrapper ถ้าไม่มีรูปใช้ภาพจำลองแทน
+  function fillImage(wrapper, src, alt) {
+    if (src) {
+      var img = el("img");
+      img.src = src;
+      img.alt = alt;
+      img.loading = "lazy";
+      wrapper.appendChild(img);
+    } else {
+      wrapper.appendChild(el("span", "ph"));
+    }
+    return wrapper;
+  }
+
+  // ---------- ปุ่ม "ดูผลงาน" ----------
+  var projectsSection = document.getElementById("projects");
+
+  document.getElementById("hero-projects-cta").addEventListener("click", function (e) {
+    e.preventDefault();
+    if (location.hash !== "#projects") history.pushState(null, "", "#projects");
+    projectsSection.scrollIntoView({ block: "center" });
+  });
+
   // ---------- ผลงาน ----------
   var grid = document.getElementById("project-grid");
   var filterBar = document.getElementById("project-filters");
   var dialog = document.getElementById("project-dialog");
+  var gridPrev = document.getElementById("grid-prev");
+  var gridNext = document.getElementById("grid-next");
   var lastTrigger = null;
-  var activeFilter = "all";
 
-  // ปกผลงาน: ใช้รูปถ้ามี ไม่มีก็ใช้ภาพจำลอง
   function buildCover(project) {
-    var cover = el("span", "cover");
     var images = project.images || [];
     var src = project.cover || (images[0] && images[0].src);
-    if (src) {
-      var img = el("img");
-      img.src = src;
-      img.alt = "ภาพตัวอย่างของ " + project.title;
-      img.loading = "lazy";
-      cover.appendChild(img);
-    } else {
-      cover.appendChild(el("span", "ph"));
-    }
-    return cover;
+    return fillImage(el("span", "cover"), src, "ภาพตัวอย่างของ " + project.title);
   }
 
   function buildCard(project) {
@@ -42,9 +54,9 @@
     card.dataset.tags = (project.tags || []).join("|").toLowerCase();
 
     var body = el("span", "card-body");
-    body.appendChild(el("span", "card-year", project.year || ""));
+    body.appendChild(el("span", "card-year", project.year));
     body.appendChild(el("span", "card-title", project.title));
-    body.appendChild(el("span", "card-summary", project.summary || ""));
+    body.appendChild(el("span", "card-summary", project.summary));
 
     var tags = el("span", "card-tags");
     (project.tags || []).slice(0, 4).forEach(function (t) {
@@ -55,106 +67,79 @@
 
     card.appendChild(buildCover(project));
     card.appendChild(body);
-
     card.addEventListener("click", function () { openProject(project, card); });
     return card;
   }
 
-  // ---------- ตัวกรองแท็ก ----------
-  function buildFilters() {
-    if (!filterBar || typeof projects === "undefined") return;
+  function renderProjects() {
+    projects.forEach(function (p) { grid.appendChild(buildCard(p)); });
 
-    var tagSet = [];
+    var empty = el("div", "grid-empty");
+    var text = el("p");
+    text.appendChild(el("strong", "", "พื้นที่สำหรับผลงานชิ้นต่อไป"));
+    empty.appendChild(text);
+    grid.appendChild(empty);
+  }
+
+  // ---------- ตัวกรองแท็ก ----------
+  function addFilterButton(label, value, isActive) {
+    var btn = el("button", isActive ? "filter-btn is-active" : "filter-btn", label);
+    btn.type = "button";
+    btn.dataset.filter = value;
+    filterBar.appendChild(btn);
+  }
+
+  function renderFilters() {
+    var allTags = [];
     projects.forEach(function (p) {
       (p.tags || []).forEach(function (t) {
-        if (tagSet.indexOf(t) === -1) tagSet.push(t);
+        if (allTags.indexOf(t) === -1) allTags.push(t);
       });
     });
-    if (!tagSet.length) return;
 
-    var all = el("button", "filter-btn is-active", "ทั้งหมด");
-    all.type = "button";
-    all.dataset.filter = "all";
-    filterBar.appendChild(all);
-
-    tagSet.forEach(function (t) {
-      var btn = el("button", "filter-btn", t);
-      btn.type = "button";
-      btn.dataset.filter = t.toLowerCase();
-      filterBar.appendChild(btn);
-    });
+    addFilterButton("ทั้งหมด", "all", true);
+    allTags.forEach(function (t) { addFilterButton(t, t.toLowerCase(), false); });
 
     filterBar.addEventListener("click", function (e) {
       var btn = e.target.closest(".filter-btn");
       if (!btn) return;
-      activeFilter = btn.dataset.filter;
       filterBar.querySelectorAll(".filter-btn").forEach(function (b) {
         b.classList.toggle("is-active", b === btn);
       });
-      applyFilter();
+      applyFilter(btn.dataset.filter);
     });
   }
 
-  function applyFilter() {
-    if (!grid) return;
+  function applyFilter(filter) {
     grid.querySelectorAll(".project-card").forEach(function (card) {
-      var tags = (card.dataset.tags || "").split("|");
-      var show = activeFilter === "all" || tags.indexOf(activeFilter) !== -1;
-      card.hidden = !show;
+      var tags = card.dataset.tags.split("|");
+      card.hidden = filter !== "all" && tags.indexOf(filter) === -1;
     });
     grid.scrollLeft = 0;
     updateGridNav();
   }
 
   // ---------- ปุ่มเลื่อนผลงานซ้าย-ขวา ----------
-  var gridPrev = document.getElementById("grid-prev");
-  var gridNext = document.getElementById("grid-next");
-
-  function scrollGrid(dir) {
-    if (!grid) return;
+  function scrollGrid(direction) {
     var card = grid.querySelector(".project-card:not([hidden])");
-    var amount = card ? card.getBoundingClientRect().width + 24 : 300;
-    grid.scrollBy({ left: dir * amount, behavior: reduceMotion ? "auto" : "smooth" });
+    var cardWidth = card ? card.offsetWidth + 24 : 300;
+    grid.scrollBy({ left: direction * cardWidth, behavior: reduceMotion ? "auto" : "smooth" });
   }
 
   function updateGridNav() {
-    if (!gridPrev || !gridNext || !grid) return;
     var maxScroll = grid.scrollWidth - grid.clientWidth - 1;
     gridPrev.disabled = grid.scrollLeft <= 0;
     gridNext.disabled = grid.scrollLeft >= maxScroll;
   }
 
-  if (gridPrev && gridNext && grid) {
-    gridPrev.addEventListener("click", function () { scrollGrid(-1); });
-    gridNext.addEventListener("click", function () { scrollGrid(1); });
-    grid.addEventListener("scroll", updateGridNav, { passive: true });
-    window.addEventListener("resize", updateGridNav);
-  }
+  gridPrev.addEventListener("click", function () { scrollGrid(-1); });
+  gridNext.addEventListener("click", function () { scrollGrid(1); });
+  grid.addEventListener("scroll", updateGridNav, { passive: true });
+  window.addEventListener("resize", updateGridNav);
 
-  function renderProjects() {
-    if (!grid || typeof projects === "undefined") return;
-    projects.forEach(function (p) { grid.appendChild(buildCard(p)); });
-
-    var empty = el("div", "grid-empty");
-    var inner = el("p");
-    inner.appendChild(el("strong", "", "พื้นที่สำหรับผลงานชิ้นต่อไป"));
-    inner.appendChild(document.createTextNode("เพิ่มได้ในไฟล์ projects.js"));
-    empty.appendChild(inner);
-    grid.appendChild(empty);
-
-    buildFilters();
-  }
-
-  function findProject(id) {
-    if (typeof projects === "undefined") return null;
-    for (var i = 0; i < projects.length; i++) {
-      if (projects[i].id === id) return projects[i];
-    }
-    return null;
-  }
-
+  // ---------- หน้าต่างรายละเอียดผลงาน ----------
   function openProject(p, trigger) {
-    lastTrigger = trigger || null;
+    lastTrigger = trigger;
 
     var gallery = document.getElementById("dialog-gallery");
     gallery.textContent = "";
@@ -186,9 +171,9 @@
 
     var links = document.getElementById("dialog-links");
     links.textContent = "";
-    (p.links || []).forEach(function (l, i) {
-      var a = el("a", i === 0 ? "btn" : "btn ghost", l.label);
-      a.href = l.url;
+    (p.links || []).forEach(function (link, i) {
+      var a = el("a", i === 0 ? "btn" : "btn ghost", link.label);
+      a.href = link.url;
       a.target = "_blank";
       a.rel = "noopener";
       links.appendChild(a);
@@ -197,62 +182,40 @@
     document.body.classList.add("modal-open");
     dialog.showModal();
     dialog.querySelector(".dialog-inner").scrollTop = 0;
-
-    if (history.replaceState) {
-      history.replaceState(null, "", "#project-" + p.id);
-    }
+    history.replaceState(null, "", "#project-" + p.id);
   }
 
-  if (dialog) {
-    // คลิกพื้นหลังหรือปุ่มปิด เพื่อปิดหน้าต่าง
-    dialog.addEventListener("click", function (e) {
-      if (e.target === dialog || e.target.hasAttribute("data-close")) dialog.close();
-    });
-    // close ครอบคลุมทุกทาง (ปุ่มปิด, พื้นหลัง, กด Esc)
-    dialog.addEventListener("close", function () {
-      document.body.classList.remove("modal-open");
-      if (history.replaceState) history.replaceState(null, "", "#projects");
-      if (lastTrigger) {
-        lastTrigger.focus();
-        lastTrigger = null;
-      }
-    });
-  }
+  dialog.addEventListener("click", function (e) {
+    if (e.target === dialog || e.target.hasAttribute("data-close")) dialog.close();
+  });
 
-  // เปิดผลงานตรงจากลิงก์ เช่น index.html#project-sample-project
+  // event close เกิดทุกทางที่ปิด รวมถึงกด Esc
+  dialog.addEventListener("close", function () {
+    document.body.classList.remove("modal-open");
+    history.replaceState(null, "", "#projects");
+    if (lastTrigger) lastTrigger.focus();
+    lastTrigger = null;
+  });
+
+  // เปิดผลงานจากลิงก์ตรง เช่น index.html#project-it-repair
   function openFromHash() {
-    var match = /^#project-(.+)$/.exec(window.location.hash);
-    if (!match) return;
-    var project = findProject(decodeURIComponent(match[1]));
+    var prefix = "#project-";
+    if (location.hash.indexOf(prefix) !== 0) return;
+    var id = decodeURIComponent(location.hash.slice(prefix.length));
+    var project = projects.find(function (p) { return p.id === id; });
     if (project) openProject(project, null);
   }
 
   renderProjects();
-  applyFilter();
+  renderFilters();
+  applyFilter("all");
   openFromHash();
   window.addEventListener("hashchange", openFromHash);
 
-  // ---------- แถบรูปผลงานเลื่อนอัตโนมัติ (บน Hero) ----------
-  function buildMarqueeItem(src) {
-    var item = el("span", "hero-marquee-item");
-    if (src) {
-      var img = el("img");
-      img.src = src;
-      img.alt = "";
-      img.loading = "lazy";
-      item.appendChild(img);
-    } else {
-      item.appendChild(el("span", "ph"));
-    }
-    return item;
-  }
-
+  // ---------- แถบรูปเลื่อนอัตโนมัติ ----------
   function renderHeroMarquee() {
-    var wrap = document.querySelector(".hero-marquee");
     var track = document.getElementById("hero-marquee-track");
-    if (!wrap || !track || typeof projects === "undefined") return;
 
-    // ดึงรูปผลงานทั้งหมดจาก projects.js (ใช้ images ถ้ามี ไม่มีก็ใช้ cover)
     var shots = [];
     projects.forEach(function (p) {
       var images = p.images || [];
@@ -262,157 +225,105 @@
         shots.push(p.cover);
       }
     });
+    if (!shots.length) shots = [""];
 
-    // ยังไม่มีรูปจริง ใช้ภาพจำลองแทนไปก่อน
-    if (!shots.length) {
-      for (var i = 0; i < 6; i++) shots.push("");
-    }
+    // ต้องมีอย่างน้อย 8 รูปให้ยาวเกินจอกว้าง ไม่งั้นจะเห็นช่องว่างทางขวา
+    var items = shots;
+    while (items.length < 8) items = items.concat(shots);
 
-    // ต่อรายการซ้ำ 1 รอบ เพื่อให้เลื่อนวนซ้ายไปขวาได้ไม่มีรอยต่อ
-    shots.concat(shots).forEach(function (src) {
-      track.appendChild(buildMarqueeItem(src));
+    // ใส่ 2 ชุดเหมือนกัน เพื่อให้ translateX(-50%) วนกลับได้ไม่มีรอยต่อ
+    items.concat(items).forEach(function (src) {
+      track.appendChild(fillImage(el("span", "hero-marquee-item"), src, ""));
     });
 
-    if (!reduceMotion) {
-      // ปรับความเร็วให้คงที่เสมอ ไม่ว่าจะมีผลงานกี่ชิ้น (ราว 40px ต่อวินาที)
-      requestAnimationFrame(function () {
-        var uniqueWidth = track.scrollWidth / 2;
-        var duration = Math.max(18, uniqueWidth / 40);
-        track.style.animationDuration = duration.toFixed(1) + "s";
-      });
-    }
+    // 8 วินาทีต่อรูป ความเร็วจะคงที่ไม่ว่ามีกี่รูป
+    track.style.animationDuration = items.length * 8 + "s";
   }
 
   renderHeroMarquee();
-
-  // ---------- ปีใน footer ----------
-  var year = document.getElementById("year");
-  if (year) year.textContent = new Date().getFullYear();
 
   // ---------- เมนูมือถือ ----------
   var navToggle = document.querySelector(".nav-toggle");
   var siteNav = document.getElementById("site-nav");
 
   function closeMobileNav() {
-    if (!navToggle || !siteNav) return;
     navToggle.setAttribute("aria-expanded", "false");
     siteNav.classList.remove("is-open");
   }
 
-  if (navToggle && siteNav) {
-    navToggle.addEventListener("click", function () {
-      var isOpen = siteNav.classList.toggle("is-open");
-      navToggle.setAttribute("aria-expanded", String(isOpen));
-    });
-
-    siteNav.addEventListener("click", function (e) {
-      if (e.target.tagName === "A") closeMobileNav();
-    });
-
-    document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape") closeMobileNav();
-    });
-  }
-
-  // ---------- สลับธีม ----------
-  var themeToggle = document.querySelector(".theme-toggle");
-
-  // ธีมเริ่มต้นคือสว่างเสมอ ไม่อิง OS สลับมืดได้เมื่อกดเอง (จำไว้ใน localStorage)
-  function currentTheme() {
-    return document.documentElement.getAttribute("data-theme") || "light";
-  }
-
-  if (themeToggle) {
-    themeToggle.setAttribute("aria-pressed", currentTheme() === "dark" ? "true" : "false");
-
-    themeToggle.addEventListener("click", function () {
-      var next = currentTheme() === "dark" ? "light" : "dark";
-      document.documentElement.setAttribute("data-theme", next);
-      themeToggle.setAttribute("aria-pressed", next === "dark" ? "true" : "false");
-      try { localStorage.setItem("theme", next); } catch (e) { }
-    });
-  }
-
-  // ---------- Scrollspy: ไฮไลต์เมนูตาม section ที่เห็น ----------
-  var navLinks = document.querySelectorAll('#site-nav a[href^="#"]');
-  var sections = [];
-  navLinks.forEach(function (a) {
-    var target = document.getElementById(a.getAttribute("href").slice(1));
-    if (target) sections.push({ link: a, target: target });
+  navToggle.addEventListener("click", function () {
+    var isOpen = siteNav.classList.toggle("is-open");
+    navToggle.setAttribute("aria-expanded", String(isOpen));
   });
 
-  if (sections.length && "IntersectionObserver" in window) {
-    var spy = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (!entry.isIntersecting) return;
-        var match = sections.filter(function (s) { return s.target === entry.target; })[0];
-        if (!match) return;
-        navLinks.forEach(function (a) {
-          a.classList.remove("is-active");
-          a.removeAttribute("aria-current");
-        });
-        match.link.classList.add("is-active");
-        match.link.setAttribute("aria-current", "true");
-      });
-    }, { rootMargin: "-45% 0px -50% 0px" });
+  siteNav.addEventListener("click", function (e) {
+    if (e.target.tagName === "A") closeMobileNav();
+  });
 
-    sections.forEach(function (s) { spy.observe(s.target); });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") closeMobileNav();
+  });
+
+  // ---------- สลับธีม (ค่าเริ่มต้นสว่าง จำค่าที่เลือกไว้ใน localStorage) ----------
+  var root = document.documentElement;
+  var themeToggle = document.querySelector(".theme-toggle");
+
+  function setTheme(theme) {
+    root.setAttribute("data-theme", theme);
+    themeToggle.setAttribute("aria-pressed", String(theme === "dark"));
   }
 
-  // ---------- Reveal ตอนเลื่อนหน้าจอมาถึง ----------
+  setTheme(root.getAttribute("data-theme") || "light");
+
+  themeToggle.addEventListener("click", function () {
+    var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    setTheme(next);
+    try { localStorage.setItem("theme", next); } catch (e) { }
+  });
+
+  // ---------- ไฮไลต์เมนูตาม section ที่กำลังดู ----------
+  var navLinks = siteNav.querySelectorAll("a");
+
+  var spy = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (!entry.isIntersecting) return;
+      navLinks.forEach(function (a) {
+        var isCurrent = a.getAttribute("href") === "#" + entry.target.id;
+        a.classList.toggle("is-active", isCurrent);
+        if (isCurrent) a.setAttribute("aria-current", "true");
+        else a.removeAttribute("aria-current");
+      });
+    });
+  }, { rootMargin: "-45% 0px -50% 0px" });
+
+  navLinks.forEach(function (a) {
+    spy.observe(document.querySelector(a.getAttribute("href")));
+  });
+
+  // ---------- ค่อยๆ แสดง section ตอนเลื่อนมาถึง ----------
   var revealEls = document.querySelectorAll(".reveal");
-  if (revealEls.length) {
-    if (reduceMotion || !("IntersectionObserver" in window)) {
-      revealEls.forEach(function (elm) { elm.classList.add("is-visible"); });
-    } else {
-      var revealObserver = new IntersectionObserver(function (entries, obs) {
-        entries.forEach(function (entry) {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("is-visible");
-            obs.unobserve(entry.target);
-          }
-        });
-      }, { threshold: 0.15 });
-      revealEls.forEach(function (elm) { revealObserver.observe(elm); });
-    }
+
+  if (reduceMotion) {
+    revealEls.forEach(function (elm) { elm.classList.add("is-visible"); });
+  } else {
+    var revealObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-visible");
+        revealObserver.unobserve(entry.target);
+      });
+    }, { threshold: 0.15 });
+    revealEls.forEach(function (elm) { revealObserver.observe(elm); });
   }
 
   // ---------- ปุ่มกลับขึ้นบน ----------
   var backToTop = document.getElementById("back-to-top");
-  if (backToTop) {
-    window.addEventListener("scroll", function () {
-      backToTop.classList.toggle("is-visible", window.scrollY > 480);
-    }, { passive: true });
 
-    backToTop.addEventListener("click", function () {
-      window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
-    });
-  }
+  window.addEventListener("scroll", function () {
+    backToTop.classList.toggle("is-visible", window.scrollY > 480);
+  }, { passive: true });
 
-  // กันหน้าเปล่าตอนพิมพ์ ถ้ายังไม่เคยเลื่อนผ่าน section นั้น (ยังไม่มี is-visible)
-  var forcedReveal = [];
-
-  function forceRevealAll() {
-    document.querySelectorAll(".reveal:not(.is-visible)").forEach(function (elm) {
-      elm.classList.add("is-visible");
-      forcedReveal.push(elm);
-    });
-  }
-
-  function undoForcedReveal() {
-    forcedReveal.forEach(function (elm) { elm.classList.remove("is-visible"); });
-    forcedReveal = [];
-  }
-
-  window.addEventListener("beforeprint", forceRevealAll);
-  window.addEventListener("afterprint", undoForcedReveal);
-
-  // ---------- ดาวน์โหลด CV เป็น PDF ----------
-  var printBtn = document.getElementById("print-cv");
-  if (printBtn) {
-    printBtn.addEventListener("click", function () {
-      forceRevealAll();
-      window.print();
-    });
-  }
+  backToTop.addEventListener("click", function () {
+    window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+  });
 })();

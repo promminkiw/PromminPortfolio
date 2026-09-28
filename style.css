@@ -1,4 +1,4 @@
-/* Tokens (จาก design.md) */
+/* Tokens */
 :root {
   --color-gallery-white: #ffffff;
   --color-studio-mist: #f5f5f7;
@@ -12,7 +12,7 @@
   --color-surface: #ffffff;
   --color-nav-bg: rgba(255, 255, 255, 0.85);
 
-  /* ฟอนต์ละตินก่อน สลับเป็น Noto Sans Thai อัตโนมัติเมื่อเจอตัวอักษรไทย */
+  /* Inter สำหรับละติน ตัวไทยจะใช้ Noto Sans Thai อัตโนมัติ */
   --font-display: "Inter", "Noto Sans Thai", sans-serif;
   --font-text: "Inter", "Noto Sans Thai", sans-serif;
 
@@ -25,7 +25,7 @@
   --section-gap: 90px;
 }
 
-/* ธีมมืด — ใช้เฉพาะตอนผู้ใช้กดสลับเอง (ค่าเริ่มต้นคือโหมดสว่างเสมอ) */
+/* ธีมมืด ใช้เมื่อผู้ใช้กดสลับเอง */
 :root[data-theme="dark"] {
   --color-gallery-white: #000000;
   --color-studio-mist: #1c1c1e;
@@ -107,7 +107,24 @@ section[id] {
   scroll-margin-top: 60px;
 }
 
-/* ปุ่ม (pill) — ทึบสีฟ้าใช้เป็น CTA หลัก โปร่งเป็นตัวเลือกรอง */
+/* ไอคอนเส้น SVG */
+.theme-toggle svg,
+.carousel-nav svg,
+.contact-icon svg,
+.back-to-top svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.theme-toggle svg,
+.contact-icon svg {
+  stroke-width: 1.8;
+}
+
+/* ปุ่ม */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -186,7 +203,7 @@ section[id] {
   font-size: 12px;
 }
 
-/* ปุ่มสลับธีม / เมนูมือถือ */
+/* ปุ่มสลับธีม และเมนูมือถือ */
 .nav-actions {
   display: flex;
   align-items: center;
@@ -209,14 +226,6 @@ section[id] {
 
 .theme-toggle:hover {
   background: var(--color-control-gray);
-}
-
-.theme-toggle svg {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.8;
-  stroke-linecap: round;
-  stroke-linejoin: round;
 }
 
 .theme-toggle .icon-sun {
@@ -265,7 +274,7 @@ section[id] {
   transform: translateY(-6px) rotate(-45deg);
 }
 
-/* Hero — จัดกึ่งกลางแบบหน้าเปิดสินค้า */
+/* Hero */
 .hero {
   display: flex;
   flex-direction: column;
@@ -314,7 +323,7 @@ section[id] {
   color: var(--color-slate);
 }
 
-/* ดึงขึ้นชิด .lead เพราะเป็นข้อความต่อเนื่องกัน */
+/* margin ติดลบเพื่อให้ชิด .lead */
 .hiring-note {
   max-width: 36em;
   margin: -12px 0 32px;
@@ -345,7 +354,7 @@ section[id] {
   }
 }
 
-/* แถบรูปผลงานเลื่อนอัตโนมัติ ซ้ายไปขวาไม่มีรอยต่อ */
+/* แถบรูปเลื่อนอัตโนมัติ */
 .hero-marquee {
   margin-top: clamp(48px, 8vw, 80px);
   width: 100%;
@@ -357,9 +366,7 @@ section[id] {
 .hero-marquee-track {
   display: flex;
   align-items: center;
-  gap: 20px;
   width: max-content;
-  padding: 0 20px;
   animation: hero-marquee-scroll 32s linear infinite;
 }
 
@@ -370,7 +377,9 @@ section[id] {
 .hero-marquee-item {
   position: relative;
   flex: 0 0 auto;
-  width: clamp(200px, 24vw, 320px);
+  width: min(300px, 78vw);
+  /* ใช้ margin แทน gap ให้ 2 ครึ่งกว้างเท่ากัน ตอนวนจะไม่กระตุก */
+  margin-right: 20px;
   aspect-ratio: 16 / 10;
   overflow: hidden;
   background: var(--color-studio-mist);
@@ -383,6 +392,7 @@ section[id] {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: top center;
 }
 
 @keyframes hero-marquee-scroll {
@@ -395,7 +405,7 @@ section[id] {
   }
 }
 
-/* ประวัติ — แถบเทาอ่อน (Studio Mist) */
+/* ประวัติ */
 .about {
   background: var(--color-studio-mist);
   padding: var(--section-gap) 0;
@@ -449,7 +459,7 @@ section[id] {
   color: var(--color-slate);
 }
 
-/* ป้ายทักษะ: outline pill เรียบ */
+/* ป้ายแท็ก */
 .stickers {
   display: flex;
   flex-wrap: wrap;
@@ -479,7 +489,7 @@ section[id] {
   border-color: var(--color-hairline-silver);
 }
 
-/* เครื่องมือที่เคยใช้: แยกหมวดหมู่ พร้อมโลโก้ */
+/* เครื่องมือที่เคยใช้ */
 .tool-groups {
   display: grid;
   gap: 28px;
@@ -538,7 +548,7 @@ section[id] {
   font-size: 17px;
 }
 
-/* ตัวกรองผลงานตามแท็ก */
+/* ตัวกรองแท็ก */
 .filter-bar {
   display: flex;
   flex-wrap: wrap;
@@ -630,14 +640,6 @@ section[id] {
   pointer-events: none;
 }
 
-.carousel-nav svg {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
 @media (hover: hover) and (pointer: fine) {
   .carousel-nav {
     display: flex;
@@ -648,8 +650,10 @@ section[id] {
   display: none;
 }
 
+/* ใช้ flex เพราะ button จัดเนื้อหากลางแนวตั้ง ทำให้รูปปกเลื่อน */
 .project-card {
-  display: block;
+  display: flex;
+  flex-direction: column;
   flex: 0 0 min(300px, 78vw);
   scroll-snap-align: start;
   padding: 0;
@@ -684,9 +688,10 @@ section[id] {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: top center;
 }
 
-/* ภาพจำลองหน้าต่างเว็บ เมื่อยังไม่มีรูปจริง */
+/* ภาพจำลองตอนยังไม่มีรูป */
 .ph {
   position: absolute;
   inset: 14% 12%;
@@ -720,7 +725,11 @@ section[id] {
 }
 
 .card-body {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1;
+  width: 100%;
   padding: 24px;
 }
 
@@ -766,9 +775,11 @@ section[id] {
   font-weight: 500;
 }
 
+/* ดันลงล่างสุด ให้ทุกการ์ดตรงกัน */
 .card-more {
   display: inline-block;
-  margin-top: 16px;
+  margin-top: auto;
+  padding-top: 16px;
   color: var(--color-apple-blue);
   font-size: 14px;
   font-weight: 500;
@@ -778,7 +789,7 @@ section[id] {
   content: " \203A";
 }
 
-/* ช่องว่างท้ายรายการ ชวนให้เพิ่มงาน */
+/* การ์ดว่างท้ายรายการ */
 .grid-empty {
   display: grid;
   place-items: center;
@@ -822,7 +833,7 @@ section[id] {
   gap: 14px;
 }
 
-/* min-width: 0 กันอีเมลยาวดันเลย์เอาต์ล้นจอบนมือถือ */
+/* กันอีเมลยาวล้นจอบนมือถือ */
 .contact-info .timeline li>div {
   min-width: 0;
   overflow-wrap: anywhere;
@@ -838,14 +849,6 @@ section[id] {
   background: var(--color-studio-mist);
   color: var(--color-ink);
   border-radius: 50%;
-}
-
-.contact-icon svg {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.8;
-  stroke-linecap: round;
-  stroke-linejoin: round;
 }
 
 /* Footer */
@@ -1001,15 +1004,7 @@ body.modal-open {
   transform: none;
 }
 
-.back-to-top svg {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-/* Reveal ตอนเลื่อนหน้าจอมาถึง */
+/* ค่อยๆ แสดงตอนเลื่อนมาถึง */
 .reveal {
   opacity: 0;
   transform: translateY(24px);
@@ -1091,7 +1086,7 @@ body.modal-open {
   }
 }
 
-/* สั่งพิมพ์ / บันทึกเป็น PDF */
+/* ตอนสั่งพิมพ์ */
 @media print {
 
   .nav,
@@ -1099,7 +1094,7 @@ body.modal-open {
   .filter-bar,
   .dialog,
   .footer,
-  #print-cv,
+  #download-cv,
   .carousel-nav,
   .hero-marquee {
     display: none !important;
@@ -1121,7 +1116,7 @@ body.modal-open {
     min-height: auto;
   }
 
-  /* กัน .reveal ที่ยังไม่เคยเลื่อนผ่าน แสดงเป็นหน้าว่างตอนพิมพ์ */
+  /* section ที่ยังไม่เลื่อนผ่านจะได้ไม่ว่างตอนพิมพ์ */
   .reveal {
     opacity: 1 !important;
     transform: none !important;
