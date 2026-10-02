@@ -59,5 +59,24 @@ const projects = [
       { label: "กลุ่มไลน์", url: "https://line.me/ti/g/ReY2QaGqar" },
       { label: "คู่มือการใช้งาน", url: "https://github.com/promminkiw/Electricity" }
     ]
+  },
+    {
+    id: "web-portfolio",
+    title: "เว็บไซต์ Portfolio ส่วนตัว",
+    summary: "เว็บไซต์แสดงผลงานและประวัติส่วนตัว",
+    year: "2026",
+    role: "ออกแบบและพัฒนาเว็บไซต์",
+    tags: ["HTML", "CSS", "JavaScript"],
+    cover: "",
+    images: [{ src: "images/workimages/web-portfolio.png", alt: "รูปเว็บไซต์ portfolio" }],
+    description: [
+      "เว็บไซต์นี้เป็น Portfolio ส่วนตัวที่แสดงผลงานและประวัติส่วนตัวของผู้พัฒนา โดยออกแบบให้ใช้งานง่ายและเข้าถึงข้อมูลได้สะดวก",
+      "ผู้ใช้สามารถดูรายละเอียดเกี่ยวกับผู้พัฒนา ผลงานที่ผ่านมา และข้อมูลติดต่อได้อย่างครบถ้วน",
+      "เว็บไซต์พัฒนาด้วย HTML, CSS และ JavaScript เพื่อให้มีความทันสมัยและตอบสนองต่อผู้ใช้ได้ดี"
+    ],
+    links: [
+      { label: "ดูเว็บจริง", url: "https://promminkiw.github.io/PromminPortfolio/" },
+      { label: "โค้ดบน GitHub", url: "https://github.com/promminkiw/PromminPortfolio" }
+    ]
   }
 ];
