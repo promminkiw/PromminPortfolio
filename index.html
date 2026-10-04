@@ -34,7 +34,7 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=7">
+  <link rel="stylesheet" href="style.css?v=8">
 
   <!-- ข้อมูลสำหรับ search engine -->
   <script type="application/ld+json">
@@ -368,8 +368,25 @@
     </div>
   </dialog>
 
+  <!-- ดูรูปผลงานแบบเต็มจอ -->
+  <dialog class="lightbox" id="lightbox" aria-label="ดูรูปขนาดเต็ม">
+    <button class="lightbox-close" type="button" data-close>ปิด</button>
+    <button class="lightbox-nav prev" type="button" id="lightbox-prev" aria-label="รูปก่อนหน้า">
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+        <path d="M15 5l-7 7 7 7"></path>
+      </svg>
+    </button>
+    <img id="lightbox-img" alt="">
+    <button class="lightbox-nav next" type="button" id="lightbox-next" aria-label="รูปถัดไป">
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+        <path d="M9 5l7 7-7 7"></path>
+      </svg>
+    </button>
+    <p class="lightbox-count" id="lightbox-count"></p>
+  </dialog>
+
   <script src="projects.js"></script>
-  <script src="script.js?v=6"></script>
+  <script src="script.js?v=7"></script>
 </body>
 
 </html>

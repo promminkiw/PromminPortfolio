@@ -18,8 +18,34 @@ const projects = [
       { label: "เพิ่มเพื่อน LINE OA", url: "https://line.me/R/ti/p/@445wgbyg" },
       { label: "โค้ดบน GitHub", url: "https://github.com/promminkiw/line-expense-bot" }
     ]
-  }
-  , {
+  },
+  {
+    id: "group-meeting",
+    title: "เว็บแอปจัดการงานและนัดเวลาสำหรับกลุ่ม",
+    summary: "เว็บแอปสำหรับกลุ่มนักศึกษาขนาดใหญ่ ใช้ติดตามว่าใครค้างงานอะไร และหาเวลานัดประชุมด้วย heatmap ที่แสดงจำนวนคนว่างในแต่ละช่วงเวลา",
+    year: "2026",
+    role: "ออกแบบและพัฒนาเว็บแอป โดยมี AI เป็นเครื่องมือช่วย",
+    tags: ["Next.js", "React", "Supabase", "Vercel"],
+    cover: "images/workimages/group-meeting-calendar-heatmap.png",
+    images: [
+      { src: "images/workimages/group-meeting-dashboard.png", alt: "หน้าภาพรวมกลุ่ม แสดงว่าใครค้างงานอะไร" },
+      { src: "images/workimages/group-meeting-tasks.png", alt: "หน้ารายการงานพร้อมตัวกรอง" },
+      { src: "images/workimages/group-meeting-calendar-heatmap.png", alt: "heatmap จำนวนคนว่างในแต่ละช่วงเวลา" },
+      { src: "images/workimages/group-meeting-availability.png", alt: "หน้ากรอกเวลาว่างประจำสัปดาห์" },
+      { src: "images/workimages/group-meeting-mobile.png", alt: "หน้าตาเว็บแอปบนมือถือ" }
+    ],
+    description: [
+      "แนวคิดเริ่มจากปัญหาที่กลุ่มใหญ่อย่างชมรมหรือกิจกรรมคณะเจอเวลาทำงานผ่าน LINE กลุ่ม คือข้อความจมจนไม่รู้ว่าใครค้างงานอะไร และหาเวลาที่ทุกคนว่างตรงกันแทบไม่ได้ จึงพัฒนาเว็บแอปนี้ขึ้นมาเพื่อแก้ทั้งสองเรื่อง",
+      "admin สร้างงานพร้อม deadline และมอบหมายให้หลายคนได้ สมาชิกแต่ละคนอัปเดตสถานะงานของตัวเอง แล้ว dashboard จะแสดงทันทีว่าใครค้างอะไร ส่วนเรื่องนัดเวลา สมาชิกกรอกเวลาว่างประจำสัปดาห์ครั้งเดียวแล้วใช้ได้กับทุกกลุ่ม ระบบแสดงเป็น heatmap ว่าช่วงไหนมีคนว่างกี่คน ให้ admin เลือกช่องเวลาแล้วสร้างนัดหมายได้เลย",
+      "พัฒนาด้วย Next.js, TypeScript และ Supabase รองรับการสมัครด้วยอีเมลหรือ Google มีระบบเชิญเข้ากลุ่มด้วยลิงก์หรือโค้ด และตรวจสิทธิ์ 3 ชั้น ตั้งแต่ฝั่งแอปไปจนถึง Row Level Security ที่ database มี unit test กว่า 250 ข้อ และ Deploy บน Vercel พร้อมใช้ AI เป็นเครื่องมือช่วยในการทำงาน",
+      "เว็บแอปช่วยให้กลุ่มใหญ่ติดตามงานได้ชัดเจนขึ้น และหาเวลานัดที่คนส่วนใหญ่สะดวกได้เร็วขึ้น"
+    ],
+    links: [
+      { label: "ดูเว็บจริง", url: "https://group-meeting-mauve.vercel.app" },
+      { label: "โค้ดบน GitHub", url: "https://github.com/promminkiw/group-meeting" }
+    ]
+  },
+  {
     id: "calculator-electric",
     title: "เว็บไซต์คำนวณค่าไฟอย่างง่าย",
     summary: "เว็บไซต์ช่วยประเมินค่าไฟรายเดือน โดยกรอกเลขมิเตอร์ครั้งก่อนและครั้งปัจจุบันเพื่อคำนวณปริมาณการใช้ไฟและค่าไฟโดยประมาณ",
@@ -60,7 +86,7 @@ const projects = [
       { label: "คู่มือการใช้งาน", url: "https://github.com/promminkiw/Electricity" }
     ]
   },
-    {
+  {
     id: "web-portfolio",
     title: "เว็บไซต์ Portfolio ส่วนตัว",
     summary: "เว็บไซต์แสดงผลงานและประวัติส่วนตัว",

@@ -137,23 +137,99 @@
   grid.addEventListener("scroll", updateGridNav, { passive: true });
   window.addEventListener("resize", updateGridNav);
 
+  // ---------- แกลเลอรีรูปในหน้าต่างรายละเอียด ----------
+  var gallery = document.getElementById("dialog-gallery");
+  var galleryImages = [];
+  var galleryIndex = 0;
+
+  function renderGallery(p) {
+    gallery.textContent = "";
+    galleryImages = (p.images || []).map(function (im) {
+      return { src: im.src, alt: im.alt || p.title };
+    });
+    galleryIndex = 0;
+
+    if (!galleryImages.length) {
+      gallery.appendChild(buildCover(p));
+      return;
+    }
+
+    var main = el("button", "gallery-main");
+    main.type = "button";
+    main.setAttribute("aria-label", "ขยายรูปเต็มจอ");
+    main.appendChild(el("img"));
+    main.addEventListener("click", function () { openLightbox(galleryIndex); });
+    gallery.appendChild(main);
+
+    // รูปเดียวไม่ต้องมีแถบ thumbnail
+    if (galleryImages.length > 1) {
+      var thumbs = el("div", "gallery-thumbs");
+      galleryImages.forEach(function (im, i) {
+        var thumb = el("button", "gallery-thumb");
+        thumb.type = "button";
+        thumb.setAttribute("aria-label", "ดูรูปที่ " + (i + 1) + ": " + im.alt);
+        fillImage(thumb, im.src, "");
+        thumb.addEventListener("click", function () { showImage(i); });
+        thumbs.appendChild(thumb);
+      });
+      gallery.appendChild(thumbs);
+    }
+
+    showImage(0);
+  }
+
+  function showImage(i) {
+    galleryIndex = i;
+    var img = gallery.querySelector(".gallery-main img");
+    img.src = galleryImages[i].src;
+    img.alt = galleryImages[i].alt;
+    gallery.querySelectorAll(".gallery-thumb").forEach(function (thumb, n) {
+      thumb.classList.toggle("is-active", n === i);
+      thumb.setAttribute("aria-current", String(n === i));
+    });
+  }
+
+  // ---------- ดูรูปเต็มจอ ----------
+  var lightbox = document.getElementById("lightbox");
+  var lightboxImg = document.getElementById("lightbox-img");
+  var lightboxCount = document.getElementById("lightbox-count");
+  var lightboxPrev = document.getElementById("lightbox-prev");
+  var lightboxNext = document.getElementById("lightbox-next");
+
+  function showLightboxImage(i) {
+    var total = galleryImages.length;
+    var index = (i + total) % total;
+    lightboxImg.src = galleryImages[index].src;
+    lightboxImg.alt = galleryImages[index].alt;
+    lightboxCount.textContent = total > 1 ? (index + 1) + " / " + total : "";
+    lightboxPrev.hidden = lightboxNext.hidden = total < 2;
+    // ให้รูปหลักใน modal ตรงกับรูปที่ดูอยู่ตอนปิด lightbox
+    showImage(index);
+  }
+
+  function openLightbox(i) {
+    showLightboxImage(i);
+    lightbox.showModal();
+  }
+
+  lightboxPrev.addEventListener("click", function () { showLightboxImage(galleryIndex - 1); });
+  lightboxNext.addEventListener("click", function () { showLightboxImage(galleryIndex + 1); });
+
+  lightbox.addEventListener("click", function (e) {
+    if (e.target === lightbox || e.target.hasAttribute("data-close")) lightbox.close();
+  });
+
+  lightbox.addEventListener("keydown", function (e) {
+    if (galleryImages.length < 2) return;
+    if (e.key === "ArrowLeft") showLightboxImage(galleryIndex - 1);
+    if (e.key === "ArrowRight") showLightboxImage(galleryIndex + 1);
+  });
+
   // ---------- หน้าต่างรายละเอียดผลงาน ----------
   function openProject(p, trigger) {
     lastTrigger = trigger;
 
-    var gallery = document.getElementById("dialog-gallery");
-    gallery.textContent = "";
-    var images = p.images || [];
-    if (images.length) {
-      images.forEach(function (im) {
-        var img = el("img");
-        img.src = im.src;
-        img.alt = im.alt || p.title;
-        gallery.appendChild(img);
-      });
-    } else {
-      gallery.appendChild(buildCover(p));
-    }
+    renderGallery(p);
 
     document.getElementById("dialog-year").textContent = p.year || "";
     document.getElementById("dialog-title").textContent = p.title;
