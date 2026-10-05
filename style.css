@@ -359,6 +359,8 @@ section[id] {
 .hero-marquee {
   margin-top: clamp(48px, 8vw, 80px);
   width: 100%;
+  /* เผื่อที่ให้รูปยกขึ้นตอน hover โดยไม่โดน overflow ตัด */
+  padding-block: 8px;
   overflow: hidden;
   -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
   mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
@@ -386,6 +388,25 @@ section[id] {
   background: var(--color-studio-mist);
   border-radius: var(--radius-cards);
   box-shadow: var(--shadow-subtle);
+}
+
+button.hero-marquee-item {
+  padding: 0;
+  border: none;
+  font: inherit;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+button.hero-marquee-item:hover,
+button.hero-marquee-item:focus-visible {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-subtle-2), 0 16px 32px rgba(0, 0, 0, 0.08);
+}
+
+/* หยุดเลื่อนตอนใช้คีย์บอร์ด ไม่งั้นรูปที่ focus อยู่จะวิ่งหนีออกจากจอ */
+.hero-marquee:focus-within .hero-marquee-track {
+  animation-play-state: paused;
 }
 
 .hero-marquee-item img {

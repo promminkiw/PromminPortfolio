@@ -292,24 +292,35 @@
   function renderHeroMarquee() {
     var track = document.getElementById("hero-marquee-track");
 
+    // โปรเจกต์ละ 1 รูป ลำดับเดียวกับ buildCover ให้ตรงกับรูปบนการ์ด
     var shots = [];
     projects.forEach(function (p) {
       var images = p.images || [];
-      if (images.length) {
-        images.forEach(function (im) { shots.push(im.src); });
-      } else if (p.cover) {
-        shots.push(p.cover);
-      }
+      var src = p.cover || (images[0] && images[0].src);
+      if (src) shots.push({ src: src, project: p });
     });
-    if (!shots.length) shots = [""];
+    if (!shots.length) shots = [{ src: "", project: null }];
 
     // ต้องมีอย่างน้อย 8 รูปให้ยาวเกินจอกว้าง ไม่งั้นจะเห็นช่องว่างทางขวา
     var items = shots;
     while (items.length < 8) items = items.concat(shots);
 
     // ใส่ 2 ชุดเหมือนกัน เพื่อให้ translateX(-50%) วนกลับได้ไม่มีรอยต่อ
-    items.concat(items).forEach(function (src) {
-      track.appendChild(fillImage(el("span", "hero-marquee-item"), src, ""));
+    items.concat(items).forEach(function (shot, i) {
+      if (!shot.project) {
+        track.appendChild(fillImage(el("span", "hero-marquee-item"), shot.src, ""));
+        return;
+      }
+      var item = el("button", "hero-marquee-item");
+      item.type = "button";
+      item.setAttribute("aria-label", "ดูรายละเอียดผลงาน " + shot.project.title);
+      // ให้ Tab และ screen reader เจอแค่ชุดแรก ชุดที่ซ้ำมีไว้แค่ทำให้วนต่อเนื่อง
+      if (i >= shots.length) {
+        item.tabIndex = -1;
+        item.setAttribute("aria-hidden", "true");
+      }
+      item.addEventListener("click", function () { openProject(shot.project, item); });
+      track.appendChild(fillImage(item, shot.src, ""));
     });
 
     // 8 วินาทีต่อรูป ความเร็วจะคงที่ไม่ว่ามีกี่รูป
